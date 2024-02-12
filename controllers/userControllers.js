@@ -83,3 +83,83 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+exports.profile = (req, res) => {
+  try {
+    const { user } = req.body;
+    user.password = undefined;
+    res.status(200).json({
+      success: true,
+      message: `Welcome ${user.name} to your profile!`,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error in profile controller: " + error.message,
+    });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { user } = req.body;
+    const { password } = req.body;
+    if (password) {
+      const hashPassword = await bcryptjs.hash(password, 10);
+      req.body.password = hashPassword;
+    }
+    const updateUser = await User.findByIdAndUpdate(user._id, req.body, {
+      runValidators: true,
+      new: true,
+    });
+    updateUser.password = undefined;
+    res.status(200).json({
+      success: true,
+      message: "update successful !",
+      updateUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error in update user controller: " + error.message,
+    });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      message: user.name + " account deleted successfully !",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error in delete user controller: " + error.message,
+    });
+  }
+};
+
+exports.logout = (req, res) => {
+  try {
+    res
+      .status(200)
+      .cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        secure: true,
+      })
+      .json({
+        success: true,
+        message: "Logout successfully!!",
+      });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error in logout controller: " + error.message,
+    });
+  }
+};
