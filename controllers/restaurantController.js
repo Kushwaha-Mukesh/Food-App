@@ -30,3 +30,26 @@ exports.create = async (req, res) => {
     });
   }
 };
+
+exports.update = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Your restaurant is updated",
+      restaurant,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error in update restaurant endpoint",
+      error,
+    });
+  }
+};
