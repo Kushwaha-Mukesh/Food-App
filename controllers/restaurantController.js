@@ -53,3 +53,33 @@ exports.update = async (req, res) => {
     });
   }
 };
+
+exports.getRestaurants = async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find();
+    res.status(200).json({
+      success: true,
+      restaurants,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error in getting all restaurants: " + error.message,
+    });
+  }
+};
+
+exports.deleteRestaurant = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: restaurant.name + " has been deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error in deleting restaurant: " + error.message,
+    });
+  }
+};

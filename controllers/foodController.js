@@ -1,5 +1,4 @@
 const Food = require("../models/food");
-const Restaurant = require("../models/restaurant");
 
 exports.create = async (req, res) => {
   try {
@@ -44,6 +43,36 @@ exports.update = async (req, res) => {
       success: false,
       message: "Error in update food endpoint",
       error,
+    });
+  }
+};
+
+exports.getFoods = async (req, res) => {
+  try {
+    const foods = await Food.find();
+    res.status(200).json({
+      success: true,
+      foods,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error in getting all foods: " + error.message,
+    });
+  }
+};
+
+exports.deleteFood = async (req, res) => {
+  try {
+    const food = await Food.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: food.name + " has been deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error in deleting restaurant: " + error.message,
     });
   }
 };
